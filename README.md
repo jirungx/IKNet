@@ -40,20 +40,4 @@ git clone https://github.com/yourname/IKNet.git
 cd IKNet
 pip install -r requirements.txt
 ```
-```
-IKNet/
-├── src/
-│   ├── model/             # IKNet architecture components
-│   ├── preprocessing/     # News & indicator preprocessing
-│   ├── training/          # Training and evaluation scripts
-│   └── shap_analysis/     # SHAP interpretability tools
-├── scripts/
-│   ├── crawl_news.py      # News crawler example
-│   └── download_sp500.py  # Yahoo Finance downloader
-├── configs/
-│   └── iknet.yaml         # Model and training configuration
-├── data/
-│   └── README_data.md     # Data description (no raw data)
-├── results/               # Output results and figures
-└── README.md
-```
+
