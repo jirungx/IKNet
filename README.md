@@ -1,2 +1,59 @@
-# IKNet
-Official implementation of IKNet (ICAIF 2025): Interpretable stock price prediction via keyword-guided integration of news and technical indicators.
+# IKNet  
+**Interpretable Stock Price Prediction via Keyword-Guided Integration of News and Technical Indicators**  
+[📄 ICAIF 2025 Paper](https://doi.org/10.1145/3768292.3770343)
+
+---
+
+## 🧠 Overview
+**IKNet** is an interpretable deep learning model that integrates **FinBERT-based keyword embeddings** from financial news with **technical indicators** to predict the next-day closing price of the S&P 500 index.  
+Unlike prior models that average document embeddings or rely on sentiment scores, IKNet provides **keyword-level explanations** of how public sentiment influences price movement using **SHAP (Shapley Additive Explanations)**.
+
+---
+
+## 📘 Publication
+> **IKNet: Interpretable Stock Price Prediction via Keyword-Guided Integration of News and Technical Indicators**  
+> *Jinwoong Kim* and *Sangjin Park*  
+> *6th ACM International Conference on AI in Finance (ICAIF 2025), Singapore, November 15–18, 2025.*  
+> [DOI: 10.1145/3768292.3770343](https://doi.org/10.1145/3768292.3770343)
+
+---
+
+## 🧩 Model Architecture
+<img width="4944" height="3738" alt="Figure1_Architecture" src="https://github.com/user-attachments/assets/bf803c1a-a611-4ce7-bb5a-25f0ea9bd27b" />
+Figure 1: Architecture of the proposed IKNet model.
+
+The IKNet model consists of four main modules:
+
+(a) **FinBERT-based Keyword Extraction** – identifies contextually salient keywords from daily financial news using gradient-based saliency.
+
+(b) **Keyword Encoder** – processes extracted keyword embeddings via independent MLP projection and GRU sequence encoder.
+
+(c) **Technical Indicator Encoder** – encodes structured OHLCV-based features using a Bi-LSTM network.
+
+(d) **Feature Fusion & Prediction** – concatenates both representations for next-day price forecasting.
+
+---
+
+## ⚙️ Installation
+```bash
+git clone https://github.com/yourname/IKNet.git
+cd IKNet
+pip install -r requirements.txt
+```
+```
+IKNet/
+├── src/
+│   ├── model/             # IKNet architecture components
+│   ├── preprocessing/     # News & indicator preprocessing
+│   ├── training/          # Training and evaluation scripts
+│   └── shap_analysis/     # SHAP interpretability tools
+├── scripts/
+│   ├── crawl_news.py      # News crawler example
+│   └── download_sp500.py  # Yahoo Finance downloader
+├── configs/
+│   └── iknet.yaml         # Model and training configuration
+├── data/
+│   └── README_data.md     # Data description (no raw data)
+├── results/               # Output results and figures
+└── README.md
+```
