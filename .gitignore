@@ -1,0 +1,24 @@
+# ========================================
+# Data folders (keep structure, ignore files)
+# ========================================
+dataset/*
+!dataset/.gitkeep
+
+tokens/*
+!tokens/.gitkeep
+
+precomputed_embeddings/*
+!precomputed_embeddings/.gitkeep
+
+# ========================================
+# Output / cache / logs
+# ========================================
+__pycache__/
+*.pyc
+outputs/
+outputs_shap/
+Feature_Importance_Final/
+saved_models/
+*.pkl
+*.pt
+*.log
