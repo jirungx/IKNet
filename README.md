@@ -42,6 +42,109 @@ The increasing influence of unstructured external information, such as news arti
 
 <br>
 
+## Build & Run Guide
+
+### 1. Environment Setup
+```bash
+# Create and activate environment
+conda create -n iknet python=3.10 -y
+conda activate iknet
+
+# Install required packages
+pip install -r requirements.txt
+```
+
+---
+
+
+### 2. Project Structure
+```
+IKNet/
+├── iknet/
+│   ├── modules/                  # Core model, training, utils
+│   ├── shap_analysis/            # SHAP explainability modules
+│   └── ...
+├── dataset/                      # (Empty) Store technical indicators CSVs
+│   └── .gitkeep
+├── tokens/                       # (Empty) Store extracted news tokens
+│   └── .gitkeep
+├── precomputed_embeddings/       # (Empty) Store cached FinBERT embeddings
+│   └── .gitkeep
+├── outputs/                      # Training outputs (auto-generated)
+├── outputs_shap/                 # SHAP analysis results (auto-generated)
+├── requirements.txt
+├── pyproject.toml
+└── .gitignore
+```
+
+---
+
+### 3. Commands Overview
+
+#### 🔹 3.1 Extract News Keywords
+```bash
+iknet-extract-keywords \
+  --news-csv dataset/snp500_news.csv \
+  --out-csv tokens/snp_topk25_tokens.csv \
+  --topk 25
+```
+
+#### 🔹 3.2 Generate Keyword Embeddings (FinBERT)
+```bash
+iknet-embed \
+  --tokens-csv tokens/snp_topk25_tokens.csv \
+  --out-pkl precomputed_embeddings/finbert_embeddings_k25.pkl
+```
+
+#### 🔹 3.3 Train Model (IKNet)
+```bash
+iknet-train \
+  --price-csv dataset/snp500_dataset.csv \
+  --feature-cols "open,high,low,close,volume,sma_20,ema_20,rsi_14,macd,signal_line,bollinger_upper,bollinger_lower,volatility_ratio,volume_change,macd_diff,bollinger_width,close_vs_sma" \
+  --time-steps 30 \
+  --horizon 1 \
+  --train-years 3 --test-years 1 \
+  --start-year 2015 --end-year 2024 \
+  --use-keywords \
+  --embedding-pkl precomputed_embeddings/finbert_embeddings_k25.pkl \
+  --topk 25 \
+  --outdir outputs/train_run_001
+```
+
+#### 🔹 3.4 Daily SHAP Analysis
+```bash
+iknet-shap-daily \
+  --price-csv dataset/snp500_dataset.csv \
+  --tokens-csv tokens/snp_topk25_tokens.csv \
+  --embedding-pkl precomputed_embeddings/finbert_embeddings_k25.pkl \
+  --outdir outputs_shap/daily
+```
+
+#### 🔹 3.5 Global Feature Importance
+```bash
+iknet-shap-fi \
+  --price-csv dataset/snp500_dataset.csv \
+  --tokens-csv tokens/snp_topk25_tokens.csv \
+  --embedding-pkl precomputed_embeddings/finbert_embeddings_k25.pkl \
+  --outdir outputs_shap/fi
+```
+
+---
+
+
+### 4. Data Folders (empty by default)
+| Folder | Purpose | Notes |
+|---------|----------|-------|
+| `dataset/` | CSVs with price & technical indicators | not tracked in Git |
+| `tokens/` | Extracted top-k keywords per day | not tracked in Git |
+| `precomputed_embeddings/` | Cached FinBERT embedding `.pkl` | not tracked in Git |
+
+> Each folder contains a `.gitkeep` file to preserve the structure in GitHub.
+
+---
+
+<br>
+
 ## Citation
 ```bibtex
 @inproceedings{kim2025iknet,
