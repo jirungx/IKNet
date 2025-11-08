@@ -52,6 +52,9 @@ conda activate iknet
 
 # Install required packages
 pip install -r requirements.txt
+
+# Install IKNet package (for CLI commands)
+pip install -e .
 ```
 
 ---
