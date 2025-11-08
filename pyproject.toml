@@ -1,0 +1,30 @@
+
+[project]
+name = "iknet"
+version = "0.1.0"
+description = "IKNet: Interpretable Stock Price Prediction via Keyword-Guided Integration of News and Technical Indicators"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "torch>=2.1.0",
+    "transformers>=4.40.0",
+    "pandas>=2.0.0",
+    "numpy>=1.24",
+    "scikit-learn>=1.3",
+    "tqdm>=4.66",
+    "joblib>=1.3"
+,
+    "shap>=0.45"
+]
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project.scripts]
+iknet-train = "iknet.train_cli:main"
+iknet-embed = "iknet.embed_cli:main"
+iknet-extract-keywords = "iknet.extract_keyword_cli:main"
+iknet-shap-daily = "iknet.shap_analysis.run_shap_daily:main"
+iknet-shap-fi = "iknet.shap_analysis.feature_importance_cli:main"
+iknet-ablation = "iknet.keyword_ablation_study:main"
