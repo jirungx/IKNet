@@ -102,34 +102,46 @@ iknet-embed \
 #### 🔹 3.3 Train Model (IKNet)
 ```bash
 iknet-train \
-  --price-csv dataset/snp500_dataset.csv \
+  --price-csv dataset/price_features.csv \
   --feature-cols "open,high,low,close,volume,sma_20,ema_20,rsi_14,macd,signal_line,bollinger_upper,bollinger_lower,volatility_ratio,volume_change,macd_diff,bollinger_width,close_vs_sma" \
-  --time-steps 30 \
+  --time-steps 10 \
   --horizon 1 \
-  --train-years 3 --test-years 1 \
-  --start-year 2015 --end-year 2024 \
+  --train-years 3 \
+  --test-years 1 \
+  --start-year 2015 \
+  --end-year 2024 \
   --use-keywords \
   --embedding-pkl precomputed_embeddings/finbert_embeddings_k25.pkl \
-  --topk 25 \
-  --outdir outputs/train_run_001
+  --topk 17 \
+  --outdir outputs/train_run_001 \
+  --save-models \
+  --save-scalers \
+  --save-preds
 ```
 
 #### 🔹 3.4 Daily SHAP Analysis
 ```bash
 iknet-shap-daily \
-  --price-csv dataset/snp500_dataset.csv \
+  --price-csv dataset/price_features.csv \
   --tokens-csv tokens/snp_topk25_tokens.csv \
-  --embedding-pkl precomputed_embeddings/finbert_embeddings_k25.pkl \
-  --outdir outputs_shap/daily
+  --outdir outputs_shap/daily \
+  --start-year 2018 \
+  --end-year 2024 \
+  --num-keywords 17 \
+  --time-steps 10 \
+  --hidden-size 384 \
+  --model-dir outputs/train_run_001/models \
+  --scaler-dir outputs/train_run_001/scalers
 ```
 
 #### 🔹 3.5 Global Feature Importance
 ```bash
 iknet-shap-fi \
-  --price-csv dataset/snp500_dataset.csv \
+  --run-dir outputs/train_run_001 \
+  --price-csv dataset/price_features.csv \
   --tokens-csv tokens/snp_topk25_tokens.csv \
-  --embedding-pkl precomputed_embeddings/finbert_embeddings_k25.pkl \
-  --outdir outputs_shap/fi
+  --save-subdir figs \
+  --include-close
 ```
 
 ---
