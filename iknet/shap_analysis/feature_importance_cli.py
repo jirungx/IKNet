@@ -1,32 +1,83 @@
 # iknet/shap_analysis/feature_importance_cli.py
-import argparse, os
+from __future__ import annotations
+
+import argparse
+import os
+from types import SimpleNamespace
+
 from . import feature_importance as fi
 
-def main():
-    ap = argparse.ArgumentParser(description="IKNet global feature importance (SHAP)")
-    ap.add_argument("--price-csv", default="dataset/snp500_dataset.csv")
-    ap.add_argument("--tokens-csv", default="tokens/snp_topk25_tokens.csv")
-    ap.add_argument("--embedding-pkl", default="precomputed_embeddings/finbert_embeddings_k25.pkl")
-    ap.add_argument("--outdir", default="outputs_shap/fi")
+
+def main() -> None:
+    """
+    Thin CLI wrapper around `feature_importance.main()`.
+
+    It:
+      1) Parses CLI args for paths and options,
+      2) Moves CWD to project root (two levels up from this file),
+      3) Patches `fi.load_data` so it always uses the provided CSV paths,
+      4) Patches `fi.parse_args` to feed the parsed args directly,
+      5) Calls `fi.main()`.
+    """
+    ap = argparse.ArgumentParser(description="IKNet global feature importance (SHAP) CLI")
+    ap.add_argument(
+        "--run-dir",
+        default="outputs/train_run_001",
+        help="Root directory containing models/scalers/results (e.g., outputs/train_run_001)",
+    )
+    ap.add_argument(
+        "--price-csv",
+        default="dataset/price_features.csv",
+        help="CSV path for price/technical features (must include 'date')",
+    )
+    ap.add_argument(
+        "--tokens-csv",
+        default="tokens/topk25_tokens.csv",
+        help="CSV path for keywords (must contain 'filtered_keywords' or 'tokens')",
+    )
+    ap.add_argument(
+        "--save-subdir",
+        default="figs",
+        help="Subdirectory under RUN_DIR to save outputs (default: figs)",
+    )
+    ap.add_argument(
+        "--include-close",
+        action="store_true",
+        help="If set, keep the 'close' feature (excluded by default)",
+    )
+    ap.add_argument("--start-year", type=int, default=2018)
+    ap.add_argument("--end-year", type=int, default=2024)
     args = ap.parse_args()
 
-    # 프로젝트 루트로 이동 (이 파일 기준 상위 2단계)
+    # Move to project root (two levels up from this file)
     project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
     os.chdir(project_root)
 
-    # load_data를 네 인자로 고정하는 래퍼로 교체
+    # Patch load_data to always use current CLI-provided CSV paths
     orig_load_data = fi.load_data
+
     def patched_load_data(price_path=None, token_path=None):
-        # feature_importance.py가 인자를 없이 부를 때도 네 인자를 강제 사용
         return orig_load_data(price_path=args.price_csv, token_path=args.tokens_csv)
+
     fi.load_data = patched_load_data
 
-    # 필요하면 outdir도 ENV로 통일 (feature_importance.py가 기본 outdir을 쓴다면 이 값이 동일해서 문제 없음)
-    os.environ["IKNET_OUTDIR"] = args.outdir
-    os.environ["IKNET_EMBED_PKL"] = args.embedding_pkl
+    # Patch parse_args to return our current CLI args directly
+    def patched_parse_args():
+        return SimpleNamespace(
+            run_dir=args.run_dir,
+            price_csv=args.price_csv,
+            tokens_csv=args.tokens_csv,
+            save_subdir=args.save_subdir,
+            include_close=args.include_close,
+            start_year=args.start_year,
+            end_year=args.end_year,
+        )
 
-    # 기존 메인 실행
+    fi.parse_args = patched_parse_args
+
+    # Delegate to the underlying implementation
     fi.main()
+
 
 if __name__ == "__main__":
     main()
